@@ -1,0 +1,17 @@
+{
+	"name": "Github Lines of Code",
+	"description": "Count lines of code in a Github project",
+	"version": "1.0",
+	"manifest_version": 2,
+	"permissions": [
+		"storage",
+		"https://github.com/*",
+		"http://ghloc.bytes.pw/*"
+	],
+	"content_scripts": [
+		{
+			"matches": ["https://github.com/*"],
+			"js": ["content-script.js"]
+		}
+	]
+}
