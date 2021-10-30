@@ -1,7 +1,6 @@
 {
 	"name": "ghloc-extension",
 	"version": "1.0.0",
-	"main": "index.js",
 	"repository": "https://github.com/pajecawav/ghloc-extension",
 	"author": "pajecawav",
 	"license": "MIT",
