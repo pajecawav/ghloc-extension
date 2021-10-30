@@ -1,98 +1,126 @@
 interface Locs {
 	loc: number;
 	locByLangs: Record<string, number>;
-	sourceUrl: string;
+	children?: Record<string, Locs>;
 }
 
 interface CachedLocs extends Locs {
 	_date: number;
 }
 
-const CACHE_EXPIRATION_MS = 30 * 60 * 1000; // 30 minutes
+interface GithubUrl {
+	repo: string;
+	type?: "tree" | "blob";
+	branch?: string;
+	path?: string[];
+}
 
-function getCachedLocs(repo: string): Promise<CachedLocs | null> {
+const CACHE_EXPIRATION_MS = 30 * 60 * 1000; // 30 minutes
+const DROPDOWN_BUTTON_ID = "_ghloc-btn";
+
+function parseCurrentGituhbUrl(): GithubUrl | null {
+	const match = location.pathname.match(
+		/\/(?<repo>[^/]+\/[^/]+)(\/(?<type>tree|blob)\/(?<branch>[^/]+))?(?<path>\/[^\$]+)?/
+	);
+	if (!match || !match.groups) {
+		return null;
+	}
+
+	const groups = match.groups;
+	if (groups.path) {
+		groups.path = groups.path.slice(1).split("/") as any;
+	}
+
+	return groups as any;
+}
+
+function getCachedLocs(repoId: string): Promise<CachedLocs | null> {
 	return new Promise(resolve => {
-		chrome.storage.local.get(repo, data => {
-			const locs = data[repo];
+		chrome.storage.local.get(repoId, data => {
+			const locs = data[repoId];
 			resolve(locs ? (JSON.parse(locs) as CachedLocs) : null);
 		});
 	});
 }
 
-function setCachedLocs(repo: string, locs: Locs): Promise<void> {
+function setCachedLocs(repoId: string, locs: Locs): Promise<void> {
 	return new Promise(resolve => {
 		chrome.storage.local.set(
-			{ [repo]: JSON.stringify({ ...locs, _date: Date.now() }) },
+			{ [repoId]: JSON.stringify({ ...locs, _date: Date.now() }) },
 			resolve
 		);
 	});
 }
 
-function getRepoPath(): string | null {
-	const author = document
-		.querySelector("[itemprop='author']")
-		?.textContent?.trim();
-
-	if (!author) {
-		return null;
+function githubUrlToRepoId(url: GithubUrl): string {
+	let repoId = url.repo;
+	if (url.branch) {
+		repoId += `/${url.branch}`;
 	}
-
-	const name = document
-		.querySelector("[itemprop='name']")
-		?.textContent?.trim();
-
-	if (!name) {
-		return null;
-	}
-
-	return `${author}/${name}`;
+	return repoId;
 }
 
-async function getLocsForRepo(repo: string): Promise<Locs> {
-	const cachedLocs = await getCachedLocs(repo);
+async function getLocsForRepo(githubUrl: GithubUrl): Promise<Locs> {
+	const repoId = githubUrlToRepoId(githubUrl);
+
+	const cachedLocs = await getCachedLocs(repoId);
 	const now = Date.now();
 	if (cachedLocs && now - cachedLocs._date <= CACHE_EXPIRATION_MS) {
 		return cachedLocs;
 	}
 
-	const response = await fetch(`http://ghloc.bytes.pw/${repo}`);
+	const response = await fetch(`http://ghloc.bytes.pw/${repoId}`);
 
 	if (!response.ok) {
 		throw new Error(response.statusText);
 	}
 
-	const json = await response.json();
-	const locs = {
-		loc: json.loc,
-		locByLangs: json.locByLangs,
-		sourceUrl: response.url,
-	};
+	const locs = await response.json();
 
-	await setCachedLocs(repo, locs);
+	await setCachedLocs(repoId, locs);
 
 	return locs;
 }
 
-function showLocs(locs: Locs) {
-	const parent = document.querySelector(".Layout-sidebar > .BorderGrid");
-	if (!parent) {
-		throw new Error("Failed to locate parent");
+async function showLocsDropdown() {
+	const container = document.getElementById(DROPDOWN_BUTTON_ID);
+	if (!container) {
+		return;
 	}
 
-	const grid = document.createElement("div");
-	grid.className = "BorderGrid-row";
+	const githubUrl = parseCurrentGituhbUrl();
+	if (!githubUrl) {
+		throw new Error("Failed to parse url");
+	}
 
-	const cell = document.createElement("div");
-	cell.className = "BorderGrid-cell";
-	grid.appendChild(cell);
+	let locs = await getLocsForRepo(githubUrl);
+	if (githubUrl.path) {
+		for (const part of githubUrl.path) {
+			if (!locs.children?.[part]) {
+				throw new Error("Failed to locate LOCs for path");
+			}
+
+			locs = locs.children[part];
+		}
+	}
+
+	const wrapper = document.createElement("div");
+	wrapper.className = "position-relative";
+
+	const dropdown = document.createElement("div");
+	dropdown.className = "dropdown-menu dropdown-menu-sw px-3 py-2";
+	dropdown.style.top = "6px";
+	dropdown.style.width = "300px";
+	dropdown.style.overflowY = "auto";
+	dropdown.style.overflowX = "hidden";
+	wrapper.appendChild(dropdown);
 
 	const heading = document.createElement("h2");
-	heading.className = "h4 mb-3";
-	cell.appendChild(heading);
+	heading.className = "h4 mb-1";
+	dropdown.appendChild(heading);
 
 	const link = document.createElement("a");
 	link.className = "Link--primary no-underline";
-	link.href = locs.sourceUrl;
 	link.textContent = " Lines of Code ";
 	heading.appendChild(link);
 
@@ -103,7 +131,7 @@ function showLocs(locs: Locs) {
 
 	const list = document.createElement("ul");
 	list.className = "list-style-none";
-	cell.appendChild(list);
+	dropdown.appendChild(list);
 
 	for (const [lang, loc] of Object.entries(locs.locByLangs)) {
 		const item = document.createElement("li");
@@ -123,14 +151,54 @@ function showLocs(locs: Locs) {
 		list.appendChild(item);
 	}
 
-	parent.appendChild(grid);
+	container.appendChild(wrapper);
+	document.addEventListener(
+		"click",
+		event => {
+			if (event.target && !dropdown.contains(event.target as Node)) {
+				wrapper.remove();
+			}
+		},
+		{ once: true }
+	);
 }
 
-(async () => {
-	const repo = getRepoPath();
-
-	if (repo) {
-		const locs = await getLocsForRepo(repo);
-		showLocs(locs);
+function attachButton() {
+	if (document.getElementById(DROPDOWN_BUTTON_ID)) {
+		return;
 	}
-})();
+
+	const container = document.querySelector(".file-navigation");
+	if (!container) {
+		return;
+	}
+
+	const details = document.createElement("details");
+	details.className =
+		"details-overlay details-reset position-relative d-block";
+
+	const summary = document.createElement("summary");
+	summary.setAttribute("role", "button");
+	summary.className = "btn ml-2";
+	details.appendChild(summary);
+
+	const button = document.createElement("span");
+	button.textContent = "Show LOC";
+	button.className = "d-none d-md-flex flex-items-center";
+	summary.appendChild(button);
+
+	const caret = document.createElement("span");
+	caret.className = "dropdown-caret ml-1";
+	button.appendChild(caret);
+
+	details.id = DROPDOWN_BUTTON_ID;
+	details.onclick = showLocsDropdown;
+	container.appendChild(details);
+}
+
+// TODO: investigate perfomance of observer
+let previousUrl = "";
+const observer = new MutationObserver(() => {
+	attachButton();
+});
+observer.observe(document.body, { subtree: true, childList: true });
