@@ -17,6 +17,7 @@ interface GithubUrl {
 
 const CACHE_EXPIRATION_MS = 30 * 60 * 1000; // 30 minutes
 const DROPDOWN_BUTTON_ID = "_ghloc-btn";
+const DROPDOWN_ID = "_ghloc-dropdown";
 
 function parseCurrentGituhbUrl(): GithubUrl | null {
 	const match = location.pathname.match(
@@ -82,7 +83,12 @@ async function getLocsForRepo(githubUrl: GithubUrl): Promise<Locs> {
 	return locs;
 }
 
-async function showLocsDropdown() {
+async function attachDropdown() {
+	const existingDropdown = document.getElementById(DROPDOWN_ID);
+	if (existingDropdown) {
+		return;
+	}
+
 	const container = document.getElementById(DROPDOWN_BUTTON_ID);
 	if (!container) {
 		return;
@@ -108,6 +114,7 @@ async function showLocsDropdown() {
 	wrapper.className = "position-relative";
 
 	const dropdown = document.createElement("div");
+	dropdown.id = DROPDOWN_ID;
 	dropdown.className = "dropdown-menu dropdown-menu-sw px-3 py-2";
 	dropdown.style.top = "6px";
 	dropdown.style.width = "300px";
@@ -152,15 +159,6 @@ async function showLocsDropdown() {
 	}
 
 	container.appendChild(wrapper);
-	document.addEventListener(
-		"click",
-		event => {
-			if (event.target && !dropdown.contains(event.target as Node)) {
-				wrapper.remove();
-			}
-		},
-		{ once: true }
-	);
 }
 
 function attachButton() {
@@ -192,7 +190,7 @@ function attachButton() {
 	button.appendChild(caret);
 
 	details.id = DROPDOWN_BUTTON_ID;
-	details.onclick = showLocsDropdown;
+	details.onclick = attachDropdown;
 	container.appendChild(details);
 }
 
