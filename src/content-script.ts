@@ -124,17 +124,13 @@ async function attachDropdown() {
 
 	const heading = document.createElement("h2");
 	heading.className = "h4 mb-1";
+	heading.textContent = " Lines of Code ";
 	dropdown.appendChild(heading);
-
-	const link = document.createElement("a");
-	link.className = "Link--primary no-underline";
-	link.textContent = " Lines of Code ";
-	heading.appendChild(link);
 
 	const counter = document.createElement("span");
 	counter.className = "Counter";
 	counter.textContent = locs.loc.toString();
-	link.appendChild(counter);
+	heading.appendChild(counter);
 
 	const list = document.createElement("ul");
 	list.className = "list-style-none";
