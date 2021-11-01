@@ -6,7 +6,7 @@
 	"permissions": [
 		"storage",
 		"https://github.com/*",
-		"http://ghloc.bytes.pw/*"
+		"https://ghloc.bytes.pw/*"
 	],
 	"content_scripts": [
 		{

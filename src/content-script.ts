@@ -70,7 +70,7 @@ async function getLocsForRepo(githubUrl: GithubUrl): Promise<Locs> {
 		return cachedLocs;
 	}
 
-	const response = await fetch(`http://ghloc.bytes.pw/${repoId}`);
+	const response = await fetch(`https://ghloc.bytes.pw/${repoId}`);
 
 	if (!response.ok) {
 		throw new Error(response.statusText);
