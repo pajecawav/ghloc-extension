@@ -18,6 +18,7 @@ interface GithubUrl {
 const CACHE_EXPIRATION_MS = 30 * 60 * 1000; // 30 minutes
 const DROPDOWN_BUTTON_ID = "_ghloc-btn";
 const DROPDOWN_ID = "_ghloc-dropdown";
+const STATS_LINK_ID = "_ghloc-stats-link";
 
 function parseCurrentGituhbUrl(): GithubUrl | null {
 	const match = location.pathname.match(
@@ -27,9 +28,17 @@ function parseCurrentGituhbUrl(): GithubUrl | null {
 		return null;
 	}
 
-	const groups = match.groups;
+	const groups = match.groups as Record<string, string | undefined>;
+
 	if (groups.path) {
 		groups.path = groups.path.slice(1).split("/") as any;
+	}
+
+	if (!groups.branch) {
+		const branchSelect = document.querySelector("[data-hotkey='w']");
+		if (branchSelect) {
+			groups.branch = branchSelect.textContent?.trim();
+		}
 	}
 
 	return groups as any;
@@ -177,7 +186,7 @@ function attachButton() {
 	details.appendChild(summary);
 
 	const button = document.createElement("span");
-	button.textContent = "Show LOC";
+	button.textContent = "LOC";
 	button.className = "d-none d-md-flex flex-items-center";
 	summary.appendChild(button);
 
@@ -190,9 +199,41 @@ function attachButton() {
 	container.appendChild(details);
 }
 
+function attachStatsLink() {
+	if (document.getElementById(STATS_LINK_ID)) {
+		return;
+	}
+
+	const container = document.querySelector(".file-navigation");
+	if (!container) {
+		return;
+	}
+
+	const url = parseCurrentGituhbUrl();
+	if (!url) {
+		return;
+	}
+
+	const link = document.createElement("a");
+	link.className = "btn ml-2";
+	link.textContent = "Stats";
+	link.id = STATS_LINK_ID;
+	link.target = "_blank";
+	link.rel = "noopener noreferrer";
+
+	let href = `https://github.elif.pw/${url.repo}`;
+	if (url.branch) {
+		href += `?branch=` + encodeURIComponent(url.branch);
+	}
+	link.href = href;
+
+	container.appendChild(link);
+}
+
 // TODO: investigate perfomance of observer
 let previousUrl = "";
 const observer = new MutationObserver(() => {
 	attachButton();
+	attachStatsLink();
 });
 observer.observe(document.body, { subtree: true, childList: true });
