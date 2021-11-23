@@ -227,7 +227,9 @@ function attachStatsLink() {
 		return;
 	}
 
-	const container = document.querySelector(".file-navigation");
+	const container =
+		document.querySelector(".file-navigation") ||
+		document.getElementById("blob-more-options-details")?.parentElement;
 	if (!container) {
 		return;
 	}
