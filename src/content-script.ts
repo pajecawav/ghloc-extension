@@ -30,9 +30,10 @@ function parseCurrentGituhbUrl(): GithubUrl | null {
 
 	const groups = match.groups as Record<string, string | undefined>;
 
-	if (groups.path) {
-		groups.path = groups.path.slice(1).split("/") as any;
-	}
+	// if (groups.path) {
+	// 	groups.path = groups.path.slice(1).split("/") as any;
+	// }
+	groups.path = getCurrentPath() as any;
 
 	if (!groups.branch) {
 		const branchSelect = document.querySelector("[data-hotkey='w']");
@@ -42,6 +43,28 @@ function parseCurrentGituhbUrl(): GithubUrl | null {
 	}
 
 	return groups as any;
+}
+
+function getCurrentPath(): string[] | null {
+	const blob = document.getElementById("blob-path");
+	if (blob) {
+		return (
+			blob.textContent?.trim().split("/").slice(1).filter(Boolean) ?? null
+		);
+	}
+
+	const navigation = document.querySelector(".file-navigation .js-repo-root");
+	if (navigation) {
+		return (
+			navigation.parentElement?.textContent
+				?.trim()
+				.split("/")
+				.slice(1)
+				.filter(Boolean) ?? null
+		);
+	}
+
+	return null;
 }
 
 function getCachedLocs(repoId: string): Promise<CachedLocs | null> {
@@ -221,9 +244,18 @@ function attachStatsLink() {
 	link.target = "_blank";
 	link.rel = "noopener noreferrer";
 
+	const path = getCurrentPath();
+	const params = new URLSearchParams();
 	let href = `https://github.elif.pw/${url.repo}`;
 	if (url.branch) {
-		href += `?branch=` + encodeURIComponent(url.branch);
+		params.append("branch", url.branch);
+	}
+	if (path) {
+		params.append("locs_path", JSON.stringify(path));
+	}
+	const paramsString = params.toString();
+	if (paramsString) {
+		href += `?${paramsString}`;
 	}
 	link.href = href;
 
