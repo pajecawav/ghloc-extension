@@ -248,7 +248,7 @@ function attachStatsLink() {
 
 	const path = getCurrentPath();
 	const params = new URLSearchParams();
-	let href = `https://github.elif.pw/${url.repo}`;
+	let href = `https://ghloc.vercel.app/${url.repo}`;
 	if (url.branch) {
 		params.append("branch", url.branch);
 	}
