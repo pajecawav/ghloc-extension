@@ -6,7 +6,7 @@
 	"permissions": [
 		"storage",
 		"https://github.com/*",
-		"https://ghloc.bytes.pw/*"
+		"https://ghloc.ifels.dev/*"
 	],
 	"content_scripts": [
 		{
