@@ -189,12 +189,35 @@ async function attachDropdown() {
 	container.appendChild(wrapper);
 }
 
+function getContainer() {
+	let withMargin = false;
+
+	// containers for old ui
+	const oldContainer =
+		document.querySelector(".file-navigation") ||
+		document.getElementById("blob-more-options-details")?.parentElement;
+
+	// container for new ui (currently in A/B test?)
+	const newContainer = document.querySelector(
+		".react-directory-add-file-icon"
+	)?.parentElement?.parentElement;
+
+	const container = oldContainer ?? newContainer;
+
+	if (container === oldContainer) {
+		withMargin = true;
+	}
+
+	return { container, withMargin };
+}
+
 function attachButton() {
 	if (document.getElementById(DROPDOWN_BUTTON_ID)) {
 		return;
 	}
 
-	const container = document.querySelector(".file-navigation");
+	const { container, withMargin } = getContainer();
+
 	if (!container) {
 		return;
 	}
@@ -205,7 +228,9 @@ function attachButton() {
 
 	const summary = document.createElement("summary");
 	summary.setAttribute("role", "button");
-	summary.className = "btn ml-2";
+	summary.className = ["btn", withMargin ? "ml-2" : ""]
+		.filter(Boolean)
+		.join(" ");
 	details.appendChild(summary);
 
 	const button = document.createElement("span");
@@ -227,9 +252,8 @@ function attachStatsLink() {
 		return;
 	}
 
-	const container =
-		document.querySelector(".file-navigation") ||
-		document.getElementById("blob-more-options-details")?.parentElement;
+	const { container, withMargin } = getContainer();
+
 	if (!container) {
 		return;
 	}
@@ -240,7 +264,9 @@ function attachStatsLink() {
 	}
 
 	const link = document.createElement("a");
-	link.className = "btn ml-2";
+	link.className = ["btn", withMargin ? "ml-2" : ""]
+		.filter(Boolean)
+		.join(" ");
 	link.textContent = "Stats";
 	link.id = STATS_LINK_ID;
 	link.target = "_blank";

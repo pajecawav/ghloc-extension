@@ -2,7 +2,7 @@
 	"$schema": "https://json.schemastore.org/webextension.json",
 	"name": "Github Lines of Code",
 	"description": "Display lines of code in a Github repository",
-	"version": "1.0.2",
+	"version": "1.0.3",
 	"manifest_version": 2,
 	"permissions": [
 		"storage",
