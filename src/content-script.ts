@@ -202,7 +202,11 @@ function getContainer() {
 		".react-directory-add-file-icon"
 	)?.parentElement?.parentElement;
 
-	const container = oldContainer ?? newContainer;
+	const newNewContainer = document.querySelector(
+		"[data-hotkey='t,Shift+T']"
+	)?.parentElement;
+
+	const container = oldContainer ?? newNewContainer ?? newContainer;
 
 	if (container === oldContainer) {
 		withMargin = true;
