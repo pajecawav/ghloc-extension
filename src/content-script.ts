@@ -169,8 +169,14 @@ function attachStatsLink() {
 		"Forks",
 	].map(t => `text()='${t}'`);
 
+	const selector = `
+	  //h3[@class='sr-only'
+		and not(ancestor::*[@id='responsive-meta-container'])
+		and (${textSelectors.join(" or ")})]
+		`.trim();
+
 	const element = document.evaluate(
-		`//h3[@class='sr-only' and (${textSelectors.join(" or ")})]`,
+		selector,
 		document,
 		null,
 		XPathResult.FIRST_ORDERED_NODE_TYPE,
