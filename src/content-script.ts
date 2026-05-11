@@ -115,140 +115,39 @@ async function getLocsForRepo(githubUrl: GithubUrl): Promise<Locs> {
 	return locs;
 }
 
-async function attachDropdown() {
-	const existingDropdown = document.getElementById(DROPDOWN_ID);
-	if (existingDropdown) {
-		return;
+function getLinkHref() {
+	const url = parseCurrentGituhbUrl();
+
+	if (!url) {
+		return null;
 	}
 
-	const container = document.getElementById(DROPDOWN_BUTTON_ID);
-	if (!container) {
-		return;
-	}
+	const path = getCurrentPath();
+	const params = new URLSearchParams();
+	let href = `https://ghloc.vercel.app/${url.repo}`;
 
-	const githubUrl = parseCurrentGituhbUrl();
-	if (!githubUrl) {
-		throw new Error("Failed to parse url");
-	}
+	if (url.branch) {
+		params.append("branch", url.branch);
+	} else {
+		const branch = document
+			.querySelector(".ref-selector-button-text-container")
+			?.textContent.trim();
 
-	let locs = await getLocsForRepo(githubUrl);
-	if (githubUrl.path) {
-		for (const part of githubUrl.path) {
-			if (!locs.children?.[part]) {
-				throw new Error("Failed to locate LOCs for path");
-			}
-
-			locs = locs.children[part];
+		if (branch) {
+			params.append("branch", branch);
 		}
 	}
 
-	const wrapper = document.createElement("div");
-	wrapper.className = "position-relative";
-
-	const dropdown = document.createElement("div");
-	dropdown.id = DROPDOWN_ID;
-	dropdown.className = "dropdown-menu dropdown-menu-sw px-3 py-2";
-	dropdown.style.top = "6px";
-	dropdown.style.width = "300px";
-	dropdown.style.overflowY = "auto";
-	dropdown.style.overflowX = "hidden";
-	wrapper.appendChild(dropdown);
-
-	const heading = document.createElement("h2");
-	heading.className = "h4 mb-1";
-	heading.textContent = " Lines of Code ";
-	dropdown.appendChild(heading);
-
-	const counter = document.createElement("span");
-	counter.className = "Counter";
-	counter.textContent = locs.loc.toString();
-	heading.appendChild(counter);
-
-	const list = document.createElement("ul");
-	list.className = "list-style-none";
-	dropdown.appendChild(list);
-
-	for (const [lang, loc] of Object.entries(locs.locByLangs)) {
-		const item = document.createElement("li");
-		item.className = "d-inline-block mr-3 text-small";
-		item.style.whiteSpace = "nowrap";
-
-		const label = document.createElement("span");
-		label.className = "color-fg-default text-bold mr-1";
-		label.textContent = lang;
-
-		const value = document.createElement("span");
-		value.textContent = loc.toString();
-
-		item.appendChild(label);
-		item.appendChild(value);
-
-		list.appendChild(item);
+	if (path) {
+		params.append("locs_path", JSON.stringify(path));
 	}
 
-	container.appendChild(wrapper);
-}
-
-function getContainer() {
-	let withMargin = false;
-
-	// containers for old ui
-	const oldContainer =
-		document.querySelector(".file-navigation") ||
-		document.getElementById("blob-more-options-details")?.parentElement;
-
-	// container for new ui (currently in A/B test?)
-	const newContainer = document.querySelector(
-		".react-directory-add-file-icon"
-	)?.parentElement?.parentElement;
-
-	const newNewContainer = document.querySelector(
-		"[data-hotkey='t,Shift+T']"
-	)?.parentElement;
-
-	const container = oldContainer ?? newNewContainer ?? newContainer;
-
-	if (container === oldContainer) {
-		withMargin = true;
+	const paramsString = params.toString();
+	if (paramsString) {
+		href += `?${paramsString}`;
 	}
 
-	return { container, withMargin };
-}
-
-function attachButton() {
-	if (document.getElementById(DROPDOWN_BUTTON_ID)) {
-		return;
-	}
-
-	const { container, withMargin } = getContainer();
-
-	if (!container) {
-		return;
-	}
-
-	const details = document.createElement("details");
-	details.className =
-		"details-overlay details-reset position-relative d-block";
-
-	const summary = document.createElement("summary");
-	summary.setAttribute("role", "button");
-	summary.className = ["btn", withMargin ? "ml-2" : ""]
-		.filter(Boolean)
-		.join(" ");
-	details.appendChild(summary);
-
-	const button = document.createElement("span");
-	button.textContent = "LOC";
-	button.className = "d-none d-md-flex flex-items-center";
-	summary.appendChild(button);
-
-	const caret = document.createElement("span");
-	caret.className = "dropdown-caret ml-1";
-	button.appendChild(caret);
-
-	details.id = DROPDOWN_BUTTON_ID;
-	details.onclick = attachDropdown;
-	container.appendChild(details);
+	return href;
 }
 
 function attachStatsLink() {
@@ -256,48 +155,60 @@ function attachStatsLink() {
 		return;
 	}
 
-	const { container, withMargin } = getContainer();
+	const href = getLinkHref();
 
-	if (!container) {
+	if (!href) {
 		return;
 	}
 
-	const url = parseCurrentGituhbUrl();
-	if (!url) {
+	const textSelectors = [
+		"Resources",
+		"License",
+		"Stars",
+		"Watchers",
+		"Forks",
+	].map(t => `text()='${t}'`);
+
+	const element = document.evaluate(
+		`//h3[@class='sr-only' and (${textSelectors.join(" or ")})]`,
+		document,
+		null,
+		XPathResult.FIRST_ORDERED_NODE_TYPE,
+		null
+	).singleNodeValue;
+
+	if (!element) {
 		return;
 	}
+
+	const div = document.createElement("div");
+	div.className = "mt-2";
+
+	const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+	svg.setAttribute("width", "16");
+	svg.setAttribute("height", "16");
+	svg.setAttribute("viewBox", "0 0 16 16");
+	svg.classList.add("octicon", "octicon-code", "mr-2", "tmp-mr-2");
+	svg.style.verticalAlign = "center";
+	svg.innerHTML = `<path d="m11.28 3.22 4.25 4.25a.75.75 0 0 1 0 1.06l-4.25 4.25a.749.749 0 0 1-1.275-.326.749.749 0 0 1 .215-.734L13.94 8l-3.72-3.72a.749.749 0 0 1 .326-1.275.749.749 0 0 1 .734.215Zm-6.56 0a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042L2.06 8l3.72 3.72a.749.749 0 0 1-.326 1.275.749.749 0 0 1-.734-.215L.47 8.53a.75.75 0 0 1 0-1.06Z"></path>`;
 
 	const link = document.createElement("a");
-	link.className = ["btn", withMargin ? "ml-2" : ""]
-		.filter(Boolean)
-		.join(" ");
-	link.textContent = "Stats";
+	link.className = "Link--muted";
 	link.id = STATS_LINK_ID;
 	link.target = "_blank";
-	link.rel = "noopener noreferrer";
-
-	const path = getCurrentPath();
-	const params = new URLSearchParams();
-	let href = `https://ghloc.vercel.app/${url.repo}`;
-	if (url.branch) {
-		params.append("branch", url.branch);
-	}
-	if (path) {
-		params.append("locs_path", JSON.stringify(path));
-	}
-	const paramsString = params.toString();
-	if (paramsString) {
-		href += `?${paramsString}`;
-	}
+	link.rel = "noopener";
 	link.href = href;
 
-	container.appendChild(link);
+	link.appendChild(svg);
+	link.appendChild(document.createTextNode(" Stats"));
+	div.appendChild(link);
+	(element as Element).after(div);
 }
 
-// TODO: investigate perfomance of observer
-let previousUrl = "";
 const observer = new MutationObserver(() => {
-	attachButton();
 	attachStatsLink();
 });
+
+attachStatsLink();
+
 observer.observe(document.body, { subtree: true, childList: true });
