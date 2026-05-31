@@ -4,15 +4,11 @@
 	"description": "Display lines of code in a Github repository",
 	"version": "1.0.5",
 	"manifest_version": 2,
-	"permissions": [
-		"storage",
-		"https://github.com/*",
-		"https://ghloc.ifels.dev/*"
-	],
+	"permissions": ["storage", "https://github.com/*", "https://ghloc.ifels.dev/*"],
 	"content_scripts": [
 		{
 			"matches": ["https://github.com/*"],
-			"js": ["content-script.js"]
+			"js": ["index.js"]
 		}
 	]
 }

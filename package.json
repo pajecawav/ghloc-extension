@@ -1,20 +1,25 @@
 {
 	"name": "ghloc-extension",
-	"version": "1.0.5",
+	"type": "module",
 	"repository": "https://github.com/pajecawav/ghloc-extension",
 	"author": "pajecawav",
 	"license": "MIT",
 	"scripts": {
-		"start": "web-ext run -s dist -t chromium",
-		"start:firefox": "web-ext run -s dist -t firefox-desktop",
-		"build": "node build.mjs && web-ext build -s dist --overwrite-dest"
+		"start": "web-ext run -s dist -t firefox-desktop",
+		"build": "rsbuild build && web-ext build -s dist --overwrite-dest",
+		"dev": "rsbuild build --watch"
 	},
 	"devDependencies": {
-		"@types/chrome": "^0.0.197",
-		"esbuild": "^0.28.0",
-		"esbuild-plugin-copy": "^2.1.1",
-		"prettier": "^2.7.1",
-		"typescript": "^4.8.4",
-		"web-ext": "^7.2.0"
-	}
+		"@pajecawav/prettier-config": "^1.0.2",
+		"@rsbuild/core": "^2.0.9",
+		"@rsbuild/plugin-babel": "^1.2.1",
+		"@rsbuild/plugin-solid": "^1.2.1",
+		"@types/chrome": "^0.1.42",
+		"hono": "^4.12.23",
+		"prettier": "^3.8.3",
+		"solid-js": "^1.9.13",
+		"typescript": "^6.0.3",
+		"web-ext": "^10.3.0"
+	},
+	"packageManager": "pnpm@11.1.2+sha512.415a1cc25974731e75455c1468371be74c5aa5fb7621b50d4056d222451609f11412f23fd602e6169f1e060466641f798597e1be961a10688836a67b16569499"
 }
