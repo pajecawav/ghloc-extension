@@ -61,7 +61,7 @@ export function Root(props: RootProps) {
 			</button>
 
 			<Show when={isDropdownOpen()}>
-				<Dropdown />
+				<Dropdown anchor={root!} />
 			</Show>
 		</div>
 	);
