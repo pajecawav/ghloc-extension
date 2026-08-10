@@ -15,7 +15,6 @@
 		"@rsbuild/plugin-babel": "^1.2.1",
 		"@rsbuild/plugin-solid": "^1.2.1",
 		"@types/chrome": "^0.1.42",
-		"hono": "^4.12.23",
 		"prettier": "^3.8.3",
 		"solid-js": "^1.9.13",
 		"typescript": "^6.0.3",

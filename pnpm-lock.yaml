@@ -23,9 +23,6 @@ importers:
       '@types/chrome':
         specifier: ^0.1.42
         version: 0.1.42
-      hono:
-        specifier: ^4.12.23
-        version: 4.12.23
       prettier:
         specifier: ^3.8.3
         version: 3.8.3
@@ -964,10 +961,6 @@ packages:
   has-flag@4.0.0:
     resolution: {integrity: sha512-EykJT/Q1KjTWctppgIAgfSO0tKVuZUjhgMr17kqTumMl6Afv3EISleU7qZUzoXDFTAHTDC4NOoG/ZxU3EvlMPQ==}
     engines: {node: '>=8'}
-
-  hono@4.12.23:
-    resolution: {integrity: sha512-eIaZ9qDgu7XV0pxOCrg7/WhnQ6Ivm22UcxhXx/A3dcbqbbYgBEkc6e/J/s7j2tS96zoB0S9VBdLwQNCWwUo4LA==}
-    engines: {node: '>=16.9.0'}
 
   html-entities@2.3.3:
     resolution: {integrity: sha512-DV5Ln36z34NNTDgnz0EWGBLZENelNAtkiFA4kyNOG2tDI6Mz1uSWiq1wAKdyjnJwyDiDO7Fa2SO1CTxPXL8VxA==}
@@ -2686,8 +2679,6 @@ snapshots:
   graceful-readlink@1.0.1: {}
 
   has-flag@4.0.0: {}
-
-  hono@4.12.23: {}
 
   html-entities@2.3.3: {}
 

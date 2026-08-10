@@ -13,7 +13,7 @@ function getLinkHref() {
 
 	// const path = getCurrentPath();
 	const params = new URLSearchParams();
-	let href = `https://ghloc.vercel.app/${url.repo}`;
+	let href = `https://ghloc.dev/${url.repo}`;
 
 	if (url.branch) {
 		params.append("branch", url.branch);
@@ -49,11 +49,12 @@ function attachStatsLink() {
 	}
 
 	const textSelectors = ["Resources", "License", "Stars", "Watchers", "Forks"].map(
-		t => `text()='${t}'`,
+		t => `contains(., '${t}')`,
 	);
 
 	const selector = `
-	  //h3[@class='sr-only'
+	  //h3[
+        contains(@class, 'sr-only')
 		and not(ancestor::*[@id='responsive-meta-container'])
 		and (${textSelectors.join(" or ")})]
 		`.trim();
