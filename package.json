@@ -11,14 +11,14 @@
 	},
 	"devDependencies": {
 		"@pajecawav/prettier-config": "^1.0.2",
-		"@rsbuild/core": "^2.0.9",
-		"@rsbuild/plugin-babel": "^1.2.1",
-		"@rsbuild/plugin-solid": "^1.2.1",
-		"@types/chrome": "^0.1.42",
-		"prettier": "^3.8.3",
-		"solid-js": "^1.9.13",
-		"typescript": "^6.0.3",
-		"web-ext": "^10.3.0"
+		"@rsbuild/core": "^2.1.13",
+		"@rsbuild/plugin-babel": "^2.0.1",
+		"@rsbuild/plugin-solid": "^1.2.2",
+		"@types/chrome": "^0.2.6",
+		"prettier": "^3.9.6",
+		"solid-js": "^1.9.14",
+		"typescript": "^7.0.2",
+		"web-ext": "^10.6.0"
 	},
-	"packageManager": "pnpm@11.1.2+sha512.415a1cc25974731e75455c1468371be74c5aa5fb7621b50d4056d222451609f11412f23fd602e6169f1e060466641f798597e1be961a10688836a67b16569499"
+	"packageManager": "pnpm@11.22.0+sha512.1ff870c4c6133dfd88fb2afc46dd13d47f09c9794b438c6fdb47ca98caf3bc16381ee0be93a091b8e3824cf01f889f46d7d9e20910fb0be1ab0fb5baa80dd621"
 }
