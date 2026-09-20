@@ -8,16 +8,17 @@
 		"start:chromium": "web-ext run -s dist -t chromium",
 		"start:firefox": "web-ext run -s dist -t firefox-desktop",
 		"build": "rsbuild build && web-ext build -s dist --overwrite-dest",
-		"dev": "rsbuild build --watch"
+		"dev": "rsbuild build --watch",
+		"lint": "tsc --noEmit && web-ext lint -s dist"
 	},
 	"devDependencies": {
 		"@pajecawav/prettier-config": "^1.0.2",
-		"@rsbuild/core": "^2.1.13",
-		"@rsbuild/plugin-babel": "^2.0.1",
+		"@rsbuild/core": "^2.2.8",
+		"@rsbuild/plugin-babel": "^2.1.0",
 		"@rsbuild/plugin-solid": "^1.2.2",
-		"@types/chrome": "^0.2.6",
-		"prettier": "^3.9.6",
-		"solid-js": "^1.9.14",
+		"@types/chrome": "^0.3.0",
+		"prettier": "^3.9.8",
+		"solid-js": "^1.9.15",
 		"typescript": "^7.0.2",
 		"web-ext": "^10.6.0"
 	},
