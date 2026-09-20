@@ -23,7 +23,7 @@ export default defineConfig({
 			js: "./",
 			jsAsync: "./",
 		},
-		copy: ["./src/manifest.json"],
+		copy: ["./src/manifest.json", { from: "./src/assets/icons", to: "./assets/icons" }],
 	},
 	performance: {
 		chunkSplit: {

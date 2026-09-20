@@ -4,6 +4,14 @@
 	"description": "Display lines of code in a Github repository",
 	"version": "1.2.0",
 	"manifest_version": 3,
+	"icons": {
+		"16": "assets/icons/icon-16.png",
+		"32": "assets/icons/icon-32.png",
+		"48": "assets/icons/icon-48.png",
+		"64": "assets/icons/icon-64.png",
+		"96": "assets/icons/icon-96.png",
+		"128": "assets/icons/icon-128.png"
+	},
 	"permissions": ["storage"],
 	"host_permissions": ["https://github.com/*", "https://ghloc.ifels.dev/*"],
 	"background": {
