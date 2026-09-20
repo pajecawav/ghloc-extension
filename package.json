@@ -5,7 +5,8 @@
 	"author": "pajecawav",
 	"license": "MIT",
 	"scripts": {
-		"start": "web-ext run -s dist -t firefox-desktop",
+		"start:chromium": "web-ext run -s dist -t chromium",
+		"start:firefox": "web-ext run -s dist -t firefox-desktop",
 		"build": "rsbuild build && web-ext build -s dist --overwrite-dest",
 		"dev": "rsbuild build --watch"
 	},

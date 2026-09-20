@@ -2,13 +2,27 @@
 	"$schema": "https://json.schemastore.org/webextension.json",
 	"name": "Github Lines of Code",
 	"description": "Display lines of code in a Github repository",
-	"version": "1.1.1",
-	"manifest_version": 2,
-	"permissions": ["storage", "https://github.com/*", "https://ghloc.ifels.dev/*"],
+	"version": "1.2.0",
+	"manifest_version": 3,
+	"permissions": ["storage"],
+	"host_permissions": ["https://github.com/*", "https://ghloc.ifels.dev/*"],
+	"background": {
+		"scripts": ["background.js"],
+		"service_worker": "background.js"
+	},
 	"content_scripts": [
 		{
 			"matches": ["https://github.com/*"],
 			"js": ["index.js"]
 		}
-	]
+	],
+	"browser_specific_settings": {
+		"gecko": {
+			"id": "{dd48306e-823f-4c70-902a-c7612f8c14fc}",
+			"strict_min_version": "127.0",
+			"data_collection_permissions": {
+				"required": ["none"]
+			}
+		}
+	}
 }

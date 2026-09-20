@@ -9,6 +9,10 @@ export default defineConfig({
 				import: "./src/index.tsx",
 				html: false,
 			},
+			background: {
+				import: "./src/background.ts",
+				html: false,
+			},
 		},
 	},
 	output: {
