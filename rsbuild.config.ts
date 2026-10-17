@@ -9,6 +9,10 @@ export default defineConfig({
 				import: "./src/index.tsx",
 				html: false,
 			},
+			background: {
+				import: "./src/background.ts",
+				html: false,
+			},
 		},
 	},
 	output: {
@@ -19,7 +23,7 @@ export default defineConfig({
 			js: "./",
 			jsAsync: "./",
 		},
-		copy: ["./src/manifest.json"],
+		copy: ["./src/manifest.json", { from: "./src/assets/icons", to: "./assets/icons" }],
 	},
 	performance: {
 		chunkSplit: {
