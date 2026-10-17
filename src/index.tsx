@@ -55,7 +55,7 @@ function attachStatsLink() {
 	const selector = `
 	  //h3[
         contains(@class, 'sr-only')
-		and not(ancestor::*[@id='responsive-meta-container'])
+		and not(ancestor::header)
 		and (${textSelectors.join(" or ")})]
 		`.trim();
 
